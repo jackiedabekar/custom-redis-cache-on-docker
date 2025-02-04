@@ -18,13 +18,16 @@ cd custom-redis-cache
 ```
 
 ### **2️⃣ Setup the `.env` File**
-Create a `.env` file in the project root by copying `env-sample`:
+Create a `.env` file in the project root by copying `env.sample`:
 ```sh
-cp env-sample .env
+cp env.sample .env
 ```
-Modify `.env` with your **Redis credentials and configuration**:
+Modify `.env` with your **Redis credentials and configuration** for reference user `env.sample`:
 ```
 REDIS_PASSWORD=your_secure_password
+COMMANDER_USER=admin
+COMMANDER_PASSWORD=strong_password
+NODE_ENV=production
 ```
 
 ### **3️⃣ Build and Start the Containers**
@@ -71,6 +74,9 @@ If running on your local machine, access Redis Commander at:
 ```
 http://localhost:8081
 ```
+You will be prompted for authentication:
+- **Username:** `$COMMANDER_USER`
+- **Password:** `$COMMANDER_PASSWORD`
 
 ### **2️⃣ Hosted Domain Access** (via Nginx Reverse Proxy)
 If configured with Nginx, access via:
@@ -79,7 +85,7 @@ http://commander.example.com
 ```
 For **Redis access**:
 ```
-http://cache.example.com
+http://cache.nexby.ai
 ```
 
 ---
@@ -89,7 +95,7 @@ To verify that **Redis data is persisting** correctly:
 
 1️⃣ **Connect to Redis CLI (Inside Container)**
 ```sh
-docker exec -it redis-cache redis-cli -h redis -p 6379 -a your_secure_password
+docker exec -it redis-cache redis-cli -h redis -p 6379 -a $REDIS_PASSWORD
 ```
 
 2️⃣ **Insert Data into Redis**
@@ -107,6 +113,7 @@ LRANGE messages 0 -1
 
 4️⃣ **Check Data in Redis Commander**
 - Open **Redis Commander** (`http://localhost:8081` or `http://commander.example.com`).
+- Log in using `$COMMANDER_USER` and `$COMMANDER_PASSWORD`.
 - You should see `user:1` and `messages` in the UI.
 
 ---
@@ -132,7 +139,7 @@ To stop and remove all containers, volumes, and images:
   docker logs redis-cache
   docker logs redis_commander
   ```
-- If Redis Commander shows **authentication errors**, ensure `REDIS_PASSWORD` is correctly set in `.env` and `docker-compose.yml`.
+- If Redis Commander shows **authentication errors**, ensure `COMMANDER_USER` and `COMMANDER_PASSWORD` are correctly set in `.env` and `docker-compose.yml`.
 
 ---
 

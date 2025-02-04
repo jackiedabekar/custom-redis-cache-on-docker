@@ -1,0 +1,42 @@
+# Ignore environment files (Secrets)
+.env
+
+# Ignore Python cache (if any)
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Docker-related files
+docker-compose.override.yml
+docker-data/
+redis-data/
+redis-dump.rdb
+dump.rdb
+appendonly.aof
+*.log
+
+# Ignore Nginx configurations (if customized per environment)
+nginx/*.conf
+
+# Ignore IDE and system-specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+logs/
+*.log
+*.out
+*.err
+
+# Ignore compiled files
+*.o
+*.so
+*.exe
+*.dll
+
+# Ignore node_modules (if Node.js is used)
+node_modules/
+npm-debug.log
+yarn-error.log

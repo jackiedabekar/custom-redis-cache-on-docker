@@ -1,0 +1,50 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis-cache
+    restart: always
+    ports:
+      - "8070:6379"
+    volumes:
+      - ./redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    env_file:
+      - .env
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - redis_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    sysctls:
+      - net.core.somaxconn=511
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis_commander
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:${REDIS_PASSWORD}
+      - NODE_ENV=production
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: node ./bin/redis-commander --redis-host redis --redis-port 6379 --redis-password ${REDIS_PASSWORD}
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - redis_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  redis_network:
+    driver: bridge

@@ -1,20 +1,89 @@
+# services:
+#   redis:
+#     image: redis:latest
+#     container_name: redis-cache
+#     restart: always
+#     ports:
+#       - "8070:6380"
+#     volumes:
+#       - ./redis-data:/data
+#       - ./redis.conf:/usr/local/etc/redis/redis.conf
+#     env_file:
+#       - .env
+#     command: redis-server /usr/local/etc/redis/redis.conf
+#     networks:
+#       - redis_network
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6380", "-a", "${REDIS_PASSWORD}", "ping"]
+#       interval: 30s
+#       timeout: 5s
+#       retries: 3
+#     sysctls:
+#       - net.core.somaxconn=511
+
+#   redis-commander:
+#     image: rediscommander/redis-commander:latest
+#     container_name: redis_commander
+#     restart: always
+#     ports:
+#       - "8081:8081"
+#     environment:
+#       - REDIS_HOSTS=local:redis:6380:0:${REDIS_PASSWORD},\
+#         db1:redis:6380:1:${REDIS_PASSWORD},\
+#         db2:redis:6380:2:${REDIS_PASSWORD},\
+#         db3:redis:6380:3:${REDIS_PASSWORD},\
+#         db4:redis:6380:4:${REDIS_PASSWORD},\
+#         db5:redis:6380:5:${REDIS_PASSWORD},\
+#         db6:redis:6380:6:${REDIS_PASSWORD},\
+#         db7:redis:6380:7:${REDIS_PASSWORD},\
+#         db8:redis:6380:8:${REDIS_PASSWORD},\
+#         db9:redis:6380:9:${REDIS_PASSWORD},\
+#         db10:redis:6380:10:${REDIS_PASSWORD},\
+#         db11:redis:6380:11:${REDIS_PASSWORD},\
+#         db12:redis:6380:12:${REDIS_PASSWORD},\
+#         db13:redis:6380:13:${REDIS_PASSWORD},\
+#         db14:redis:6380:14:${REDIS_PASSWORD},\
+#         db15:redis:6380:15:${REDIS_PASSWORD}
+#       - REDIS_PASSWORD=${REDIS_PASSWORD}
+#       - HTTP_USER=${COMMANDER_USER}
+#       - HTTP_PASSWORD=${COMMANDER_PASSWORD}
+#       - NODE_ENV=${NODE_ENV}
+#     command: redis-server --port 6380 --requirepass ${REDIS_PASSWORD}
+#     env_file:
+#       - .env
+#     depends_on:
+#       redis:
+#         condition: service_healthy
+#     networks:
+#       - redis_network
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:8081"]
+#       interval: 30s
+#       timeout: 5s
+#       retries: 3
+
+# networks:
+#   redis_network:
+#     driver: bridge
+
+
 services:
   redis:
     image: redis:latest
     container_name: redis-cache
     restart: always
     ports:
-      - "8070:6379"
+      - "8070:6380"  # Host 8070 -> Container 6380
     volumes:
       - ./redis-data:/data
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis.conf:/usr/local/etc/redis/redis.conf  # Mount redis.conf
     env_file:
       - .env
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf  # Use custom config
     networks:
       - redis_network
     healthcheck:
-      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6380", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -28,27 +97,27 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - REDIS_HOSTS=local:redis:6379:0:${REDIS_PASSWORD},\
-        db1:redis:6379:1:${REDIS_PASSWORD},\
-        db2:redis:6379:2:${REDIS_PASSWORD},\
-        db3:redis:6379:3:${REDIS_PASSWORD},\
-        db4:redis:6379:4:${REDIS_PASSWORD},\
-        db5:redis:6379:5:${REDIS_PASSWORD},\
-        db6:redis:6379:6:${REDIS_PASSWORD},\
-        db7:redis:6379:7:${REDIS_PASSWORD},\
-        db8:redis:6379:8:${REDIS_PASSWORD},\
-        db9:redis:6379:9:${REDIS_PASSWORD},\
-        db10:redis:6379:10:${REDIS_PASSWORD},\
-        db11:redis:6379:11:${REDIS_PASSWORD},\
-        db12:redis:6379:12:${REDIS_PASSWORD},\
-        db13:redis:6379:13:${REDIS_PASSWORD},\
-        db14:redis:6379:14:${REDIS_PASSWORD},\
-        db15:redis:6379:15:${REDIS_PASSWORD}
+      - REDIS_HOSTS=local:redis:6380:0:${REDIS_PASSWORD}
+        db1:redis:6380:1:${REDIS_PASSWORD},\
+        db2:redis:6380:2:${REDIS_PASSWORD},\
+        db3:redis:6380:3:${REDIS_PASSWORD},\
+        db4:redis:6380:4:${REDIS_PASSWORD},\
+        db5:redis:6380:5:${REDIS_PASSWORD},\
+        db6:redis:6380:6:${REDIS_PASSWORD},\
+        db7:redis:6380:7:${REDIS_PASSWORD},\
+        db8:redis:6380:8:${REDIS_PASSWORD},\
+        db9:redis:6380:9:${REDIS_PASSWORD},\
+        db10:redis:6380:10:${REDIS_PASSWORD},\
+        db11:redis:6380:11:${REDIS_PASSWORD},\
+        db12:redis:6380:12:${REDIS_PASSWORD},\
+        db13:redis:6380:13:${REDIS_PASSWORD},\
+        db14:redis:6380:14:${REDIS_PASSWORD},\
+        db15:redis:6380:15:${REDIS_PASSWORD}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - HTTP_USER=${COMMANDER_USER}
       - HTTP_PASSWORD=${COMMANDER_PASSWORD}
       - NODE_ENV=${NODE_ENV}
-    command: node ./bin/redis-commander --redis-host redis --redis-port 6379 --redis-password ${REDIS_PASSWORD}
+    command: node ./bin/redis-commander --redis-host redis --redis-port 6380 --redis-password ${REDIS_PASSWORD}
     env_file:
       - .env
     depends_on:
